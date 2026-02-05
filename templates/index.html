@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content animate-fade-in-up">
+        <h1 class="hero-title">Профессиональное обучение<br>Химии и Биологии</h1>
+        <p class="hero-subtitle">Современная платформа для школьников и студентов с интерактивными уроками и персональным подходом</p>
+        <div class="flex justify-center gap-6 mt-5">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                🚀 Начать обучение
+            </a>
+            <a href="{{ url_for('videos') }}" class="btn btn-secondary btn-lg">
+                📺 Смотреть уроки
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Статистика -->
+    <div class="stats-grid stagger-animation">
+        <div class="stat-card">
+            <div class="stat-number">{{ videos }}</div>
+            <div class="stat-label">Видеоуроков</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ homeworks }}</div>
+            <div class="stat-label">Заданий</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ students }}</div>
+            <div class="stat-label">Учеников</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Доступ</div>
+        </div>
+    </div>
+
+    <!-- Преимущества -->
+    <div class="content-section animate-fade-in-up">
+        <h2 class="text-center gradient-text mb-5">Почему выбирают нас?</h2>
+        <div class="stagger-animation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="card card-hover-lift">
+                <h3 class="flex items-center gap-2">
+                    👨‍🏫 Опытные преподаватели
+                </h3>
+                <p class="mb-0">Профессионалы с многолетним стажем и авторскими методиками преподавания</p>
+            </div>
+            <div class="card card-hover-lift">
+                <h3 class="flex items-center gap-2">
+                    💻 Современная платформа
+                </h3>
+                <p class="mb-0">Интуитивный интерфейс и передовые технологии для эффективного обучения</p>
+            </div>
+            <div class="card card-hover-lift">
+                <h3 class="flex items-center gap-2">
+                    📚 Разнообразные материалы
+                </h3>
+                <p class="mb-0">Видеоуроки, интерактивные задания, тесты и практические работы</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Предметы -->
+    <div class="content-section animate-fade-in-up">
+        <h2 class="text-center gradient-text mb-5">Направления обучения</h2>
+        <div class="stagger-animation" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="card" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: white;">
+                <h3 class="text-xl">🧪 Химия</h3>
+                <ul class="mb-0" style="list-style: none; padding: 0;">
+                    <li class="py-1">• Органическая химия</li>
+                    <li class="py-1">• Неорганическая химия</li>
+                    <li class="py-1">• Решение задач</li>
+                    <li class="py-1">• Лабораторные работы</li>
+                </ul>
+            </div>
+            <div class="card" style="background: linear-gradient(135deg, #059669, #10b981); color: white;">
+                <h3 class="text-xl">🔬 Биология</h3>
+                <ul class="mb-0" style="list-style: none; padding: 0;">
+                    <li class="py-1">• Анатомия человека</li>
+                    <li class="py-1">• Генетика</li>
+                    <li class="py-1">• Ботаника</li>
+                    <li class="py-1">• Экология</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

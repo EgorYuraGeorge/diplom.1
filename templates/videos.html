@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Заголовок и кнопка -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="hero-title" style="font-size: 2.5rem; margin: 0;">Видеоуроки</h1>
+            <p class="text-secondary mt-2">Изучайте химию и биологию через видеоуроки</p>
+        </div>
+        {% if current_user.role == 'teacher' %}
+        <a href="{{ url_for('add_video') }}" class="btn btn-primary btn-lg">
+            <span style="font-size: 1.2rem; margin-right: 0.5rem;">➕</span>
+            Добавить видео
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Список видео -->
+    {% if videos %}
+    <div class="stagger-animation">
+        <div class="grid gap-8" style="grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));">
+            {% for video in videos %}
+            <div class="card card-hover-lift">
+                <!-- Заголовок и действия -->
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1">
+                        <h3 class="gradient-text" style="margin: 0 0 0.5rem 0; font-size: 1.3rem;">
+                            {{ video.title }}
+                        </h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="stat-label" style="background: {% if video.subject == 'chemistry' %}var(--primary){% else %}var(--secondary){% endif %}; color: white; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem;">
+                            {{ '🧪 Химия' if video.subject == 'chemistry' else '🔬 Биология' }}
+                        </span>
+                       {% if current_user.role == 'teacher' and video.teacher_id == current_user.id %}
+<form method="POST" action="{{ url_for('delete_video', video_id=video.id) }}" 
+      style="display: inline;" 
+      onsubmit="return confirm('Вы уверены, что хотите удалить это видео?')">
+    <button type="submit" class="btn btn-danger" 
+            style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: var(--danger); color: white; border: none; border-radius: var(--radius-base); cursor: pointer;">
+        🗑️
+    </button>
+</form>
+{% endif %}
+                    </div>
+                </div>
+                
+                <!-- Видео плеер -->
+                <div class="video-container mb-4" style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);">
+                    {% if video.video_type == 'youtube' %}
+                    <iframe 
+                        src="{{ video.video_url }}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        style="width: 100%; height: 250px; display: block;">
+                    </iframe>
+                    {% elif video.video_type == 'vimeo' %}
+                    <iframe 
+                        src="{{ video.video_url }}" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen
+                        style="width: 100%; height: 250px; display: block;">
+                    </iframe>
+                    {% endif %}
+                </div>
+                
+                <!-- Описание -->
+                <div class="mb-4">
+                    <p class="text-secondary" style="line-height: 1.6;">
+                        {{ video.description or 'Описание видеоурока' }}
+                    </p>
+                </div>
+                
+                <!-- Информация -->
+                <div class="flex justify-between items-center text-sm">
+                    <div class="flex items-center gap-2 text-tertiary">
+                        <span>👨‍🏫 {{ video.teacher.username }}</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-tertiary">
+                        <span>📅 {{ video.date_added.strftime('%d.%m.%Y') }}</span>
+                        <span>{{ video.video_type|upper }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <!-- Сообщение когда нет видео -->
+    <div class="content-section text-center animate-pulse-slow">
+        <div style="padding: 4rem 2rem;">
+            <span style="font-size: 5rem; display: block; margin-bottom: 1.5rem;">🎬</span>
+            <h2 style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.8rem;">
+                Пока нет видеоуроков
+            </h2>
+            <p style="color: var(--text-tertiary); font-size: 1.1rem; margin-bottom: 2.5rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                {% if current_user.role == 'teacher' %}
+                Начните создавать образовательный контент для ваших учеников
+                {% else %}
+                Учитель еще не добавил видеоуроки. Скоро здесь появятся интересные материалы!
+                {% endif %}
+            </p>
+            {% if current_user.role == 'teacher' %}
+            <a href="{{ url_for('add_video') }}" class="btn btn-primary btn-lg">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">🎥</span>
+                Создать первый видеоурок
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

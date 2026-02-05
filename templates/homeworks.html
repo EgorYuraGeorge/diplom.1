@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Заголовок и кнопка -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="hero-title" style="font-size: 2.5rem; margin: 0;">Домашние задания</h1>
+            <p class="text-secondary mt-2">Выполняйте задания и получайте оценки</p>
+        </div>
+        {% if current_user.role == 'teacher' %}
+        <a href="{{ url_for('add_homework') }}" class="btn btn-primary btn-lg">
+            <span style="font-size: 1.2rem; margin-right: 0.5rem;">📝</span>
+            Новое задание
+        </a>
+        {% endif %}
+    </div>
+
+    {% if homeworks %}
+    <div class="stagger-animation">
+        <div class="grid gap-6">
+            {% for homework in homeworks %}
+            <div class="card card-hover-lift">
+                <!-- Заголовок и предмет -->
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1">
+                        <h3 class="gradient-text" style="margin: 0 0 0.5rem 0; font-size: 1.4rem;">
+                            {{ homework.title }}
+                        </h3>
+                        <p class="text-secondary" style="line-height: 1.6; margin: 0;">
+                            {{ homework.description }}
+                        </p>
+                    </div>
+                    <span class="stat-label" style="background: {% if homework.subject == 'chemistry' %}var(--primary){% else %}var(--secondary){% endif %}; color: white; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; white-space: nowrap;">
+                        {{ '🧪 Химия' if homework.subject == 'chemistry' else '🔬 Биология' }}
+                    </span>
+                </div>
+                
+                <!-- Информация о задании -->
+                <div class="grid gap-4 mb-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="flex items-center gap-2">
+                        <span style="font-size: 1.2rem;">⭐</span>
+                        <div>
+                            <div style="font-weight: 600;">Макс. балл</div>
+                            <div style="color: var(--text-secondary);">{{ homework.max_points }}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span style="font-size: 1.2rem;">📅</span>
+                        <div>
+                            <div style="font-weight: 600;">Дедлайн</div>
+                            <div style="color: var(--text-secondary);">
+                                {% if homework.deadline %}
+                                    {{ homework.deadline.strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    Не установлен
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span style="font-size: 1.2rem;">👨‍🏫</span>
+                        <div>
+                            <div style="font-weight: 600;">Автор</div>
+                            <div style="color: var(--text-secondary);">{{ homework.teacher.username }}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span style="font-size: 1.2rem;">📊</span>
+                        <div>
+                            <div style="font-weight: 600;">Сдано работ</div>
+                            <div style="color: var(--text-secondary);">{{ homework.results|length }}</div>
+                        </div>
+                    </div>
+</div>
+                
+                <!-- Файл задания -->
+                {% if homework.file_path %}
+                <div class="mb-4 p-3" style="background: var(--bg-secondary); border-radius: var(--radius-lg);">
+                    <div class="flex items-center gap-3">
+                        <span style="font-size: 1.3rem;">📎</span>
+                        <div>
+                            <div style="font-weight: 600;">Прикрепленный файл</div>
+                            <a href="{{ url_for('download_file', filename=homework.file_path) }}" 
+                               class="text-primary" 
+                               style="text-decoration: none;">
+                                {{ homework.file_name }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Форма сдачи для учеников -->
+                {% if current_user.role == 'student' %}
+                <div class="border-t pt-4" style="border-color: var(--border-light);">
+                    <h4 class="gradient-text mb-3" style="font-size: 1.1rem;">📤 Сдать задание</h4>
+                    <form method="POST" action="{{ url_for('submit_homework', homework_id=homework.id) }}" enctype="multipart/form-data">
+                        <div class="form-group mb-3">
+                            <textarea name="answer" 
+                                      class="form-control" 
+                                      rows="3" 
+                                      placeholder="Напишите ваш ответ здесь..."></textarea>
+                        </div>
+                        <div class="flex gap-4 items-center">
+                            <div class="flex-1">
+                                <input type="file" 
+                                       name="answer_file" 
+                                       class="form-control" 
+                                       style="padding: 0.5rem; font-size: 0.9rem;">
+                                <small class="text-tertiary">Или прикрепите файл с ответом</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+                                📤 Отправить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <!-- Сообщение когда нет заданий -->
+    <div class="content-section text-center animate-pulse-slow">
+        <div style="padding: 4rem 2rem;">
+            <span style="font-size: 5rem; display: block; margin-bottom: 1.5rem;">📚</span>
+            <h2 style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.8rem;">
+                Пока нет заданий
+            </h2>
+            <p style="color: var(--text-tertiary); font-size: 1.1rem; margin-bottom: 2.5rem;">
+                {% if current_user.role == 'teacher' %}
+                Создайте первое задание для ваших учеников
+                {% else %}
+                Учитель еще не добавил задания. Скоро здесь появятся новые задачи!
+                {% endif %}
+            </p>
+            {% if current_user.role == 'teacher' %}
+            <a href="{{ url_for('add_homework') }}" class="btn btn-primary btn-lg">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">📝</span>
+                Создать первое задание
+            </a>
+            {% else %}
+            <div class="flex justify-center gap-4">
+                <a href="{{ url_for('videos') }}" class="btn btn-secondary">
+                    🎥 Смотреть видеоуроки
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    🏠 На главную
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

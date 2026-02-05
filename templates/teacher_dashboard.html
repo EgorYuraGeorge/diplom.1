@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <h1 class="gradient-text mb-4">Панель учителя</h1>
+    
+    <!-- Статистика -->
+    <div class="stats-grid stagger-animation">
+        <div class="stat-card">
+            <div class="stat-number">{{ videos_count }}</div>
+            <div class="stat-label">Видеоуроков</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ homeworks_count }}</div>
+            <div class="stat-label">Заданий</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ students_count }}</div>
+            <div class="stat-label">Учеников</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ submitted_works }}</div>
+            <div class="stat-label">Сданных работ</div>
+        </div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="dashboard-grid stagger-animation">
+        <a href="{{ url_for('add_video') }}" class="dashboard-card">
+            <span class="dashboard-card-icon">🎬</span>
+            <h3 class="dashboard-card-title">Добавить видео</h3>
+            <p class="dashboard-card-description">Создайте новый видеоурок для учеников</p>
+        </a>
+        
+        <a href="{{ url_for('videos') }}" class="dashboard-card">
+            <span class="dashboard-card-icon">📹</span>
+            <h3 class="dashboard-card-title">Все видео</h3>
+            <p class="dashboard-card-description">Просмотр всех видеоуроков</p>
+        </a>
+        
+        <a href="{{ url_for('add_homework') }}" class="dashboard-card">
+            <span class="dashboard-card-icon">📝</span>
+            <h3 class="dashboard-card-title">Добавить задание</h3>
+            <p class="dashboard-card-description">Создайте домашнее задание</p>
+        </a>
+        
+        <a href="{{ url_for('results') }}" class="dashboard-card">
+            <span class="dashboard-card-icon">📊</span>
+            <h3 class="dashboard-card-title">Результаты</h3>
+            <p class="dashboard-card-description">Просмотр и оценка работ учеников</p>
+        </a>
+    </div>
+
+    <!-- Активности -->
+    <div class="activity-feed animate-fade-in-up">
+        <div class="activity-header">
+            <span class="activity-icon">⚡</span>
+            <h3>Последняя активность</h3>
+        </div>
+        
+        {% if recent_activities %}
+            {% for activity in recent_activities %}
+            <div class="activity-item">
+                <div class="activity-content">
+                    <span class="activity-user">{{ activity.student.username }}</span>
+                    <span class="activity-action">сдал задание</span>
+                    <strong>"{{ activity.homework.title }}"</strong>
+                </div>
+                <span class="activity-time">
+                    {{ activity.date_submitted.strftime('%d.%m.%Y в %H:%M') }}
+                </span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-secondary">Пока нет активностей</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

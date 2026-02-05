@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <div class="container-narrow">
+        <div class="text-center mb-8">
+            <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 1rem;">
+                🎥 Добавить видеоурок
+            </h1>
+            <p class="text-secondary" style="font-size: 1.1rem;">
+                Загрузите видеофайл или укажите ссылку на YouTube/Vimeo
+            </p>
+        </div>
+
+        <div class="card" style="max-width: 700px; margin: 0 auto;">
+            <form method="POST" action="{{ url_for('add_video') }}" enctype="multipart/form-data">
+                <!-- Название видео -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span style="font-size: 1.1rem;">📝 Название видео</span>
+                    </label>
+                    <input type="text" 
+                           name="title" 
+                           class="form-control" 
+                           placeholder="Введите название видеоурока" 
+                           required
+                           style="font-size: 1rem; padding: 1rem;">
+                </div>
+
+                <!-- Способ добавления -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span style="font-size: 1.1rem;">📁 Способ добавления</span>
+                    </label>
+                    <div class="grid gap-4" style="grid-template-columns: 1fr 1fr;">
+                        <div>
+                            <input type="radio" id="upload_file" name="video_type" value="uploaded" checked onclick="toggleVideoInput()">
+                            <label for="upload_file" style="margin-left: 0.5rem;">📤 Загрузить файл</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="use_link" name="video_type" value="youtube" onclick="toggleVideoInput()">
+                            <label for="use_link" style="margin-left: 0.5rem;">🔗 Использовать ссылку</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Загрузка файла -->
+                <div class="form-group" id="file_upload_section">
+                    <label class="form-label">
+                        <span style="font-size: 1.1rem;">📹 Видеофайл</span>
+                    </label>
+                    <input type="file" 
+                           name="video_file" 
+                           class="form-control" 
+                           accept="video/*"
+                           style="font-size: 1rem; padding: 1rem; border: 2px dashed var(--border-light);">
+                    <small class="text-tertiary" style="display: block; margin-top: 0.5rem;">
+                        Поддерживаемые форматы: MP4, MOV, AVI, MKV, WebM 
+                        <strong style="color: var(--warning);">(макс. 500MB)</strong>
+                    </small>
+                </div>
+
+                <!-- Ссылка на видео -->
+                <div class="form-group" id="link_section" style="display: none;">
+                    <label class="form-label">
+                        <span style="font-size: 1.1rem;">🔗 Ссылка на видео</span>
+                    </label>
+                    <input type="url" 
+                           name="video_url" 
+                           class="form-control" 
+                           placeholder="Вставьте ссылку на YouTube или Vimeo"
+                           style="font-size: 1rem; padding: 1rem;">
+                    <div class="mt-2">
+                        <label class="form-label">Тип платформы:</label>
+                        <select name="video_type" class="form-control" style="font-size: 1rem; padding: 1rem;">
+                            <option value="youtube">YouTube</option>
+                            <option value="vimeo">Vimeo</option>
+                        </select>
+                    </div>
+                    <small class="text-tertiary" style="display: block; margin-top: 0.5rem;">
+                        <strong>Примеры корректных ссылок:</strong><br>
+                        YouTube: https://www.youtube.com/watch?v=CODE<br>
+                        YouTube Short: https://youtu.be/CODE<br>
+                        Vimeo: https://vimeo.com/123456789
+                    </small>
+                </div>
+
+                <!-- Предмет -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span style="font-size: 1.1rem;">📚 Предмет</span>
+                    </label>
+                    <select name="subject" class="form-control" required style="font-size: 1rem; padding: 1rem;">
+                        <option value="">Выберите предмет</option>
+                        <option value="chemistry">🧪 Химия</option>
+                        <option value="biology">🔬 Биология</option>
+                    </select>
+                </div>
+
+                <!-- Описание -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span style="font-size: 1.1rem;">📄 Описание видео</span>
+                    </label>
+                    <textarea name="description" 
+                              class="form-control" 
+                              rows="4" 
+                              placeholder="Опишите содержание видеоурока..."
+                              style="font-size: 1rem; padding: 1rem;"></textarea>
+                </div>
+
+                <!-- Кнопки -->
+                <div class="flex gap-4 mt-8">
+                    <button type="submit" class="btn btn-primary flex-1" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                        <span style="font-size: 1.2rem; margin-right: 0.5rem;">🎬</span>
+                        Добавить видеоурок
+                    </button>
+                    <a href="{{ url_for('videos') }}" class="btn btn-secondary" style="padding: 1rem 1.5rem;">
+                        ← Назад
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleVideoInput() {
+        const fileSection = document.getElementById('file_upload_section');
+        const linkSection = document.getElementById('link_section');
+        const uploadFileRadio = document.getElementById('upload_file');
+        
+        if (uploadFileRadio.checked) {
+            fileSection.style.display = 'block';
+            linkSection.style.display = 'none';
+        } else {
+            fileSection.style.display = 'none';
+            linkSection.style.display = 'block';
+        }
+    }
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleVideoInput();
+    });
+</script>
+
+<style>
+    /* Стили для радиокнопок */
+    input[type="radio"] {
+        margin-right: 8px;
+        transform: scale(1.2);
+    }
+    
+    label {
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    /* Плавные переходы */
+    #file_upload_section, #link_section {
+        transition: all 0.3s ease-in-out;
+    }
+</style>
+{% endblock %}
