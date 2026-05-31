@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Заголовок -->
+    <div class="results-header">
+        <div class="results-title">
+            <span class="results-icon">📊</span>
+            <div>
+                <h1 class="gradient-text" style="margin: 0;">{{ test.title }}</h1>
+                <p class="text-secondary">Результаты тестирования</p>
+            </div>
+        </div>
+        <a href="{{ url_for('tests') }}" class="btn btn-secondary">← К списку тестов</a>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid-modern">
+        <div class="stat-card-modern">
+            <div class="stat-icon">👨‍🎓</div>
+            <div class="stat-number">{{ results|length }}</div>
+            <div class="stat-label">Прошли тест</div>
+        </div>
+        <div class="stat-card-modern">
+            <div class="stat-icon">📈</div>
+            <div class="stat-number">{{ avg_score }}%</div>
+            <div class="stat-label">Средний балл</div>
+        </div>
+        <div class="stat-card-modern">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-number">{{ test.questions|length }}</div>
+            <div class="stat-label">Вопросов</div>
+        </div>
+        <div class="stat-card-modern">
+            <div class="stat-icon">✅</div>
+            <div class="stat-number">{{ test.passing_score }}%</div>
+            <div class="stat-label">Проходной балл</div>
+        </div>
+    </div>
+
+    <!-- Таблица результатов -->
+    {% if results %}
+    <div class="results-table-container">
+        <table class="results-table-modern">
+            <thead>
+                <tr>
+                    <th>Ученик</th>
+                    <th>Баллы</th>
+                    <th>Процент</th>
+                    <th>Оценка</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td class="student-cell">
+                        <div class="student-avatar">
+                            {{ result.student.username[0]|upper }}
+                        </div>
+                        <span>{{ result.student.username }}</span>
+                    </td>
+                    <td class="score-cell">{{ result.score }}/{{ result.max_score }}</td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" `style="width: {{ result.percentage }}%; 
+                                background: {% if result.percentage >= 85 %}#10b981
+                                         {% elif result.percentage >= 70 %}#3b82f6
+                                         {% elif result.percentage >= 50 %}#f59e0b
+                                         {% else %}#ef4444{% endif %}"`>
+                            </div>
+                            <span class="progress-text">{{ result.percentage }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="grade-badge grade-{{ result.grade }}">
+                            {{ result.grade }}
+                        </span>
+                    </td>
+                    <td class="date-cell">
+                        {{ result.completed_at.strftime('%d.%m.%Y') }}
+                        <span class="time-small">{{ result.completed_at.strftime('%H:%M') }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-results">
+        <div class="empty-icon">📭</div>
+        <h3>Пока нет результатов</h3>
+        <p>Никто ещё не прошел этот тест</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+/* Современная статистика */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.results-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.results-icon {
+    font-size: 48px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+.stats-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card-modern {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s;
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1f2937;
+    line-height: 1;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+/* Таблица результатов */
+.results-table-container {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.results-table-modern {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table-modern th {
+    text-align: left;
+    padding: 18px 20px;
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #475569;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.results-table-modern td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.results-table-modern tr:hover {
+    background: #f8fafc;
+}
+
+.student-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.student-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.score-cell {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Прогресс бар */
+.progress-bar {
+    width: 120px;
+    height: 32px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+}
+
+/* Бейджи оценок */
+.grade-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.grade-5 {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.grade-4 {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.grade-3 {
+    background: #fed7aa;
+    color: #92400e;
+}
+
+.grade-2 {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.date-cell {
+    font-size: 0.85rem;
+    color: #4b5563;
+}
+
+.time-small {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    display: block;
+}
+
+/* Пустое состояние */
+.empty-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.empty-results h3 {
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+.empty-results p {
+    color: #6b7280;
+}
+
+/* Адаптация */
+@media (max-width: 768px) {
+    .stats-grid-modern {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .results-table-modern th,
+    .results-table-modern td {
+        padding: 12px;
+        font-size: 0.8rem;
+    }
+    
+    .progress-bar {
+        width: 80px;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .results-table-container {
+        overflow-x: auto;
+    }
+    
+    .results-table-modern {
+        min-width: 500px;
+    }
+}
+</style>
+{% endblock %}

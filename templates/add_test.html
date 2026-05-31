@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <h1 class="gradient-text mb-4">📝 Создание теста</h1>
+    
+    <div class="card">
+        <form method="POST" id="testForm">
+            <div class="form-group">
+                <label class="form-label">Название теста</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Описание</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div class="grid gap-4" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-group">
+                    <label class="form-label">Предмет</label>
+                    <select name="subject" class="form-control" required>
+                        <option value="chemistry">🧪 Химия</option>
+                        <option value="biology">🔬 Биология</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Время на тест (мин)</label>
+                    <input type="number" name="time_limit" class="form-control" value="0" min="0">
+                    <small>0 - без ограничения</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Проходной балл (%)</label>
+                <input type="number" name="passing_score" class="form-control" value="50" min="0" max="100">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Авто-удаление</label>
+                <select name="auto_delete" class="form-control">
+                    <option value="">Никогда</option>
+                    <option value="7">Через 7 дней</option>
+                    <option value="14">Через 14 дней</option>
+                    <option value="30">Через 30 дней</option>
+                </select>
+            </div>
+            
+            <hr style="margin: 30px 0;">
+            
+            <h3>📋 Вопросы</h3>
+            <div id="questions-container">
+                <!-- Вопросы будут добавляться сюда -->
+            </div>
+            
+            <button type="button" onclick="addQuestion()" class="btn btn-secondary">➕ Добавить вопрос</button>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">💾 Сохранить тест</button>
+                <a href="{{ url_for('tests') }}" class="btn btn-secondary">← Назад</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.question-card {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.answer-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.answer-row input[type="text"] {
+    flex: 1;
+}
+
+.remove-answer {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.remove-question {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.question-type-select {
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+</style>
+
+<script>
+let questionCount = 0;
+
+function addQuestion() {
+    questionCount++;
+    const container = document.getElementById('questions-container');
+    const questionDiv = document.createElement('div');
+    questionDiv.className = 'question-card';
+    questionDiv.setAttribute('data-qid', questionCount);
+    
+    questionDiv.innerHTML = `
+        <div class="form-group">
+            <label>Вопрос ${questionCount}</label>
+            <input type="text" name="question_${questionCount}_text" class="form-control" placeholder="Введите вопрос..." required>
+        </div>
+        <div class="form-group">
+            <label>Тип вопроса</label>
+            <select name="question_${questionCount}_type" class="question-type-select">
+                <option value="single">🔘 Один правильный ответ</option>
+                <option value="multiple">☑️ Несколько правильных ответов</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Баллы за вопрос</label>
+            <input type="number" name="question_${questionCount}_points" class="form-control" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label>Варианты ответов</label>
+            <div id="answers_${questionCount}" class="answers-container">
+                <div class="answer-row">
+                    <input type="text" name="question_${questionCount}_answer_0" class="form-control" placeholder="Вариант ответа" required>
+                    <label><input type="checkbox" name="question_${questionCount}_correct_0"> Правильный</label>
+                    <button type="button" onclick="removeAnswer(this)" class="remove-answer">✕</button>
+                </div>
+                <div class="answer-row">
+                    <input type="text" name="question_${questionCount}_answer_1" class="form-control" placeholder="Вариант ответа" required>
+                    <label><input type="checkbox" name="question_${questionCount}_correct_1"> Правильный</label>
+                    <button type="button" onclick="removeAnswer(this)" class="remove-answer">✕</button>
+                </div>
+            </div>
+            <button type="button" onclick="addAnswer(${questionCount})" class="btn btn-sm btn-secondary">➕ Добавить вариант ответа</button>
+        </div>
+        <button type="button" onclick="removeQuestion(this)" class="remove-question">🗑️ Удалить вопрос</button>
+    `;
+    container.appendChild(questionDiv);
+}
+
+function addAnswer(qid) {
+    const container = document.getElementById(`answers_${qid}`);
+    const answerCount = container.children.length;
+    const answerDiv = document.createElement('div');
+    answerDiv.className = 'answer-row';
+    answerDiv.innerHTML = `
+        <input type="text" name="question_${qid}_answer_${answerCount}" class="form-control" placeholder="Вариант ответа" required>
+        <label><input type="checkbox" name="question_${qid}_correct_${answerCount}"> Правильный</label>
+        <button type="button" onclick="removeAnswer(this)" class="remove-answer">✕</button>
+    `;
+    container.appendChild(answerDiv);
+}
+
+function removeAnswer(btn) {
+    btn.parentElement.remove();
+}
+
+function removeQuestion(btn) {
+    btn.parentElement.remove();
+}
+
+// Добавляем первый вопрос при загрузке
+addQuestion();
+</script>
+{% endblock %}

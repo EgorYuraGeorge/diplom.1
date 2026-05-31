@@ -3,7 +3,6 @@
 {% block content %}
 <div class="animate-fade-in-up">
     <div class="container-narrow">
-        <!-- Заголовок -->
         <div class="text-center mb-8">
             <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 1rem;">
                 📝 Создать задание
@@ -13,28 +12,16 @@
             </p>
         </div>
 
-        <!-- Форма -->
         <div class="card" style="max-width: 700px; margin: 0 auto;">
             <form method="POST" action="{{ url_for('add_homework') }}" enctype="multipart/form-data">
-                <!-- Название задания -->
                 <div class="form-group">
-                    <label class="form-label">
-                        <span style="font-size: 1.1rem;">📌 Название задания</span>
-                    </label>
-                    <input type="text" 
-                           name="title" 
-                           class="form-control" 
-                           placeholder="Введите название задания" 
-                           required
-                           style="font-size: 1rem; padding: 1rem;">
+                    <label class="form-label">📌 Название задания</label>
+                    <input type="text" name="title" class="form-control" placeholder="Введите название задания" required style="font-size: 1rem; padding: 1rem;">
                 </div>
 
-                <!-- Предмет и баллы -->
                 <div class="grid gap-6" style="grid-template-columns: 1fr 1fr;">
                     <div class="form-group">
-                        <label class="form-label">
-                            <span style="font-size: 1.1rem;">📚 Предмет</span>
-                        </label>
+                        <label class="form-label">📚 Предмет</label>
                         <select name="subject" class="form-control" required style="font-size: 1rem; padding: 1rem;">
                             <option value="">Выберите предмет</option>
                             <option value="chemistry">🧪 Химия</option>
@@ -43,64 +30,50 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">
-                            <span style="font-size: 1.1rem;">⭐ Макс. балл</span>
-                        </label>
-                        <input type="number" 
-                               name="max_points" 
-                               class="form-control" 
-                               value="100"
-                               min="1"
-                               max="1000"
-                               style="font-size: 1rem; padding: 1rem;">
+                        <label class="form-label">⭐ Макс. балл</label>
+                        <input type="number" name="max_points" class="form-control" value="100" min="1" max="1000" style="font-size: 1rem; padding: 1rem;">
                     </div>
                 </div>
 
-                <!-- Дедлайн -->
                 <div class="form-group">
-                    <label class="form-label">
-                        <span style="font-size: 1.1rem;">📅 Дедлайн (опционально)</span>
-                    </label>
-                    <input type="date" 
-                           name="deadline" 
-                           class="form-control" 
-                           style="font-size: 1rem; padding: 1rem;">
+                    <label class="form-label">📅 Дедлайн (опционально)</label>
+                    <input type="date" name="deadline" class="form-control" style="font-size: 1rem; padding: 1rem;">
                     <small class="text-tertiary" style="display: block; margin-top: 0.5rem;">
                         Если не установить, задание будет без дедлайна
                     </small>
                 </div>
 
-                <!-- Описание -->
                 <div class="form-group">
-                    <label class="form-label">
-                        <span style="font-size: 1.1rem;">📄 Описание задания</span>
-                    </label>
-                    <textarea name="description" 
-                              class="form-control" 
-                              rows="6" 
-                              placeholder="Опишите задание подробно. Что нужно сделать ученикам? Какие требования?"
-                              required
-                              style="font-size: 1rem; padding: 1rem; resize: vertical;"></textarea>
+                    <label class="form-label">⏰ Авто-удаление задания</label>
+                    <select name="auto_delete" class="form-control" style="font-size: 1rem; padding: 1rem;">
+                        <option value="">Никогда не удалять</option>
+                        <option value="1">Через 1 день</option>
+                        <option value="3">Через 3 дня</option>
+                        <option value="7">Через 1 неделю</option>
+                        <option value="14">Через 2 недели</option>
+                        <option value="30">Через 1 месяц</option>
+                    </select>
+                    <small class="text-tertiary" style="display: block; margin-top: 0.5rem;">
+                        Задание автоматически удалится после выбранного срока
+                    </small>
                 </div>
-<!-- Файл задания -->
+
                 <div class="form-group">
-                    <label class="form-label">
-                        <span style="font-size: 1.1rem;">📎 Прикрепить файл (опционально)</span>
-                    </label>
-                    <input type="file" 
-                           name="homework_file" 
-                           class="form-control" 
-                           style="font-size: 1rem; padding: 1rem; border: 2px dashed var(--border-light);">
+                    <label class="form-label">📄 Описание задания</label>
+                    <textarea name="description" class="form-control" rows="6" placeholder="Опишите задание подробно..." required style="font-size: 1rem; padding: 1rem; resize: vertical;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📎 Прикрепить файл (опционально)</label>
+                    <input type="file" name="homework_file" class="form-control" style="font-size: 1rem; padding: 1rem; border: 2px dashed #e2e8f0;">
                     <small class="text-tertiary" style="display: block; margin-top: 0.5rem;">
                         Поддерживаемые форматы: PDF, DOC, DOCX, TXT, ZIP, RAR
                     </small>
                 </div>
 
-                <!-- Кнопки -->
                 <div class="flex gap-4 mt-8">
                     <button type="submit" class="btn btn-primary flex-1" style="padding: 1rem 2rem; font-size: 1.1rem;">
-                        <span style="font-size: 1.2rem; margin-right: 0.5rem;">✅</span>
-                        Создать задание
+                        ✅ Создать задание
                     </button>
                     <a href="{{ url_for('homeworks') }}" class="btn btn-secondary" style="padding: 1rem 1.5rem;">
                         ← Назад
@@ -108,32 +81,6 @@
                 </div>
             </form>
         </div>
-
-        <!-- Подсказки -->
-        <div class="content-section mt-8">
-            <h3 class="gradient-text text-center mb-6">💡 Советы по созданию заданий</h3>
-            <div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-                <div class="card">
-                    <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                        🎯 Четкость
-                    </h4>
-                    <p class="text-secondary">Формулируйте задание ясно и конкретно</p>
-                </div>
-                <div class="card">
-                    <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                        ⏱️ Время
-                    </h4>
-                    <p class="text-secondary">Указывайте реалистичные сроки выполнения</p>
-                </div>
-                <div class="card">
-                    <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                        📊 Критерии
-                    </h4>
-                    <p class="text-secondary">Четко опишите критерии оценки</p>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}
-

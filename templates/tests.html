@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="animate-fade-in-up">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="gradient-text" style="font-size: 2rem; margin: 0;">📝 Тесты</h1>
+        {% if current_user.role == 'teacher' %}
+        <a href="{{ url_for('add_test') }}" class="btn btn-primary">➕ Создать тест</a>
+        {% endif %}
+    </div>
+
+    <div class="tests-grid">
+        {% for test in tests %}
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-subject {% if test.subject == 'chemistry' %}chemistry{% else %}biology{% endif %}">
+                    {% if test.subject == 'chemistry' %}🧪 Химия{% else %}🔬 Биология{% endif %}
+                </span>
+                <h3 class="test-title">{{ test.title }}</h3>
+                <p class="test-desc">{{ test.description[:100] }}{% if test.description|length > 100 %}...{% endif %}</p>
+            </div>
+            <div class="test-info">
+                <div class="info-item">
+                    <span>📊</span>
+                    <span>{{ test.questions|length }} вопросов</span>
+                </div>
+                <div class="info-item">
+                    <span>⏱️</span>
+                    <span>{% if test.time_limit > 0 %}{{ test.time_limit }} мин{% else %}Без лимита{% endif %}</span>
+                </div>
+                <div class="info-item">
+                    <span>✅</span>
+                    <span>Проходной: {{ test.passing_score }}%</span>
+                </div>
+            </div>
+
+            {% if current_user.role == 'student' %}
+                {% set result = test.results|selectattr('student_id', 'equalto', current_user.id)|first %}
+                {% if result %}
+                    <div class="test-result">
+                        <div class="result-badge {{ 'passed' if result.grade|int >= 3 else 'failed' }}">
+                            Результат: {{ result.score }}/{{ result.max_score }} ({{ result.percentage }}%) - Оценка: {{ result.grade }}
+                        </div>
+                    </div>
+                    {% if not result.completed_at %}
+                    <a href="{{ url_for('take_test', test_id=test.id) }}" class="btn btn-primary" style="margin: 15px; text-align: center;">▶ Продолжить</a>
+                    {% else %}
+                    <div class="test-actions">
+                        <span class="completed-badge">✅ Пройден {{ result.completed_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('take_test', test_id=test.id) }}" class="btn btn-primary" style="margin: 15px; text-align: center;">▶ Начать тест</a>
+                {% endif %}
+            {% else %}
+                <div class="test-actions teacher-actions">
+                    <a href="{{ url_for('test_results', test_id=test.id) }}" class="btn btn-secondary">📊 Результаты</a>
+                    <form method="POST" action="{{ url_for('delete_test', test_id=test.id) }}" style="display: inline;" onsubmit="return confirm('Удалить тест?')">
+                        <button type="submit" class="btn btn-danger">🗑️ Удалить</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size: 50px;">📝</div>
+            <h3>Пока нет тестов</h3>
+            {% if current_user.role == 'teacher' %}
+                <a href="{{ url_for('add_test') }}" class="btn btn-primary">➕ Создать первый тест</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.tests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+}
+
+.test-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s;
+}
+
+.test-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+.test-header {
+    padding: 20px;
+    background: #f8fafc;
+}
+
+.test-subject {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.test-subject.chemistry {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.test-subject.biology {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
+.test-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.test-desc {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.test-info {
+    display: flex;
+    gap: 16px;
+    padding: 15px 20px;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fefefe;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #475569;
+}
+
+.test-result {
+    padding: 12px 20px;
+    background: #f1f5f9;
+}
+
+.result-badge {
+    padding: 8px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.result-badge.passed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.result-badge.failed {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.test-actions {
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.completed-badge {
+    padding: 8px 16px;
+    background: #d1fae5;
+    color: #065f46;
+    border-radius: 30px;
+    font-size: 0.8rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px;
+    background: #f8fafc;
+    border-radius: 20px;
+}
+
+.empty-state h3 {
+    margin: 15px 0;
+    color: #475569;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+</style>
+{% endblock %}

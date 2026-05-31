@@ -1,71 +1,58 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход - Школа Химии и Биологии</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <header class="header">
-        <nav class="nav container">
-            <a href="{{ url_for('index') }}" class="logo">
-                <span class="logo-icon">🔬</span>
-                Химия & Биология
-            </a>
-            <div class="nav-links">
-                <a href="{{ url_for('index') }}">На главную</a>
-            </div>
-        </nav>
-    </header>
+{% extends "base.html" %}
 
-    <main>
-        <div class="form-container">
-            <div class="form-card">
-                <h1 class="form-title">Вход в систему</h1>
-                
-                <!-- ФОРМА С method="POST" -->
-                <form method="POST" action="{{ url_for('login') }}">
-                    <div class="form-group">
-                        <label for="username">Имя пользователя:</label>
-                        <input type="text" id="username" name="username" class="form-control" required 
-                               placeholder="Введите ваше имя пользователя">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password">Пароль:</label>
-                        <input type="password" id="password" name="password" class="form-control" required 
-                               placeholder="Введите ваш пароль">
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
-                        Войти в систему
-                    </button>
-                </form>
-                
-                <p style="text-align: center; margin-bottom: 1.5rem;">
-                    Нет аккаунта? <a href="{{ url_for('register') }}" style="color: var(--primary); text-decoration: none;">
-                    Зарегистрируйтесь</a>
-                </p>
-                
-                <div style="background: rgba(37, 99, 235, 0.1); padding: 1.5rem; border-radius: 12px;">
-                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Тестовые аккаунты:</h4>
-                    <p><strong>👨‍🏫 Учитель:</strong> teacher / teacher123</p>
-                    <p><strong>👨‍🎓 Ученик:</strong> Зарегистрируйтесь самостоятельно</p>
-                </div>
-
-                <!-- Сообщения об ошибках -->
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        <div style="background: #fee; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
-                            {% for message in messages %}
-                                <p style="color: #c53030; margin: 0;">{{ message }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h1 class="form-title">Вход в систему</h1>
+        
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" class="form-control" required 
+                       placeholder="Введите ваше имя пользователя">
             </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" class="form-control" required 
+                       placeholder="Введите ваш пароль">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                Войти в систему
+            </button>
+        </form>
+        
+        <p style="text-align: center; margin-bottom: 1.5rem;">
+            Нет аккаунта? <a href="{{ url_for('register') }}" style="color: var(--primary); text-decoration: none;">
+            Зарегистрируйтесь</a>
+        </p>
+        
+        <div style="background: rgba(37, 99, 235, 0.1); padding: 1.5rem; border-radius: 12px;">
+            <h4 style="color: var(--primary); margin-bottom: 1rem;">Тестовые аккаунты:</h4>
+            <p><strong>👨‍🏫 Учитель:</strong> teacher / teacher123</p>
+            <p><strong>👩‍🎓 Ученик:</strong> student / student123</p>
         </div>
-    </main>
-</body>
-</html>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="margin-top: 1rem;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+<style>
+/* Дополнительные стили для страницы входа */
+.form-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock %}

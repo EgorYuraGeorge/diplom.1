@@ -1,0 +1,501 @@
+<div class="chat-button" onclick="toggleChat()">
+    💬
+    <span class="chat-badge" id="unreadTotal">0</span>
+</div>
+
+<div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+        <span>💬 Чат</span>
+        <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+    
+    {% if current_user.role == 'teacher' %}
+    <div class="chat-users">
+        {% for student in students_list %}
+        <div class="chat-user" data-id="{{ student.id }}" onclick="selectUser(`{{ student.id }}`)">
+            <div class="chat-user-avatar">{{ student.username[0]|upper }}</div>
+            <div class="chat-user-name">{{ student.username }}</div>
+            <span class="chat-user-badge" id="badge{{ student.id }}"></span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="chat-messages" id="chatMessages">
+        <div class="chat-empty">💬 Выберите диалог</div>
+    </div>
+    
+    <div class="chat-input" id="chatInput" style="display: none;">
+        <input type="text" id="chatInputField" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMessage()">
+       
+        <input type="file" id="chatFileInput" accept="image/*" style="display: none;" onchange="uploadPhoto(this)">
+        <button onclick="sendMessage()">📤</button>
+    </div>
+</div>
+
+<style>
+.chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+    background: #7c3aed;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    color: white;
+}
+
+.chat-button:hover { transform: scale(1.05); }
+
+.chat-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+.chat-panel {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.chat-panel.open { display: flex; }
+
+.chat-header {
+    background: #7c3aed;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.chat-users {
+    max-height: 120px;
+    overflow-y: auto;
+    border-bottom: 1px solid #eee;
+    background: #f9fafb;
+}
+
+.chat-user {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 3px solid transparent;
+}
+
+.chat-user:hover { background: #f3f4f6; }
+.chat-user.active { background: #ede9fe; border-left-color: #7c3aed; }
+
+.chat-user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+}
+
+.chat-user-name { flex: 1; font-weight: 500; }
+
+.chat-user-badge {
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chat-empty { text-align: center; padding: 40px; color: #94a3b8; }
+
+.chat-message { display: flex; margin-bottom: 6px; }
+.chat-message.own { justify-content: flex-end; }
+.chat-message.other { justify-content: flex-start; }
+
+.message-bubble {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+}
+
+.chat-message.own .message-bubble {
+    background: #7c3aed;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.other .message-bubble {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    border-bottom-left-radius: 4px;
+}
+
+.message-time { font-size: 10px; opacity: 0.7; margin-top: 3px; }
+
+.message-photo {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 12px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.chat-input {
+    padding: 12px;
+    border-top: 1px solid #eee;
+    background: white;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+}
+
+.chat-input input:focus { border-color: #7c3aed; }
+
+.chat-file-label {
+    padding: 10px 12px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.chat-file-label:hover { background: #e2e8f0; }
+
+.chat-input button {
+    padding: 10px 15px;
+    background: #7c3aed;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+}
+
+.chat-menu {
+    position: fixed;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 5px 0;
+    z-index: 2000;
+    min-width: 140px;
+}
+
+.chat-menu-item { padding: 8px 15px; cursor: pointer; font-size: 13px; }
+.chat-menu-item:hover { background: #f1f5f9; }
+.chat-menu-item.delete { color: #dc2626; }
+</style>
+
+<script>
+let currentUserId = null;
+let isTeacher = '{{ current_user.role }}' === 'teacher';
+
+function toggleChat() {
+    const panel = document.getElementById('chatPanel');
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open') && currentUserId) {
+        loadMessages();
+        markAsRead();
+        setTimeout(() => document.getElementById('chatInputField')?.focus(), 100);
+    }
+}
+
+function selectUser(userId) {
+    currentUserId = userId;
+    
+    document.querySelectorAll('.chat-user').forEach(el => {
+        el.classList.remove('active');
+        if (el.getAttribute('data-id') == userId) {
+            el.classList.add('active');
+            document.getElementById(`badge${userId}`).style.display = 'none';
+        }
+    });
+    
+    document.getElementById('chatInput').style.display = 'flex';
+    loadMessages();
+    markAsRead();
+    setTimeout(() => document.getElementById('chatInputField')?.focus(), 100);
+}
+
+function loadMessages() {
+    if (!currentUserId) return;
+    
+    fetch('/api/get_messages/' + currentUserId)
+        .then(res => res.json())
+        .then(messages => {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = '';
+            
+            if (!messages.length) {
+                container.innerHTML = '<div class="chat-empty">💬 Нет сообщений</div>';
+                return;
+            }
+            
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'chat-message ' + (msg.is_me ? 'own' : 'other');
+                div.setAttribute('data-id', msg.id);
+                div.setAttribute('data-is-me', msg.is_me);
+                div.setAttribute('data-text', msg.message);
+                div.onclick = function(e) {
+                    if (e.target.classList.contains('message-bubble') || e.target.parentElement.classList.contains('message-bubble')) {
+                        showMenu(e, msg.id, msg.is_me, msg.message);
+                    }
+                };
+                
+                let content = '';
+                if (msg.message) {
+                    content += `<div>${escapeHtml(msg.message)}</div>`;
+                }
+                if (msg.file_path) {
+                    content += `<img src="${msg.file_path}" class="message-photo" onclick="event.stopPropagation(); window.open('${msg.file_path}')">`;
+                }
+                content += `<div class="message-time">${msg.created_at}</div>`;
+                
+                div.innerHTML = `<div class="message-bubble">${content}</div>`;
+                container.appendChild(div);
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        });
+}
+
+function showMenu(event, msgId, isMyMessage, oldText) {
+    event.stopPropagation();
+    
+    const oldMenu = document.querySelector('.chat-menu');
+    if (oldMenu) oldMenu.remove();
+    
+    const menu = document.createElement('div');
+    menu.className = 'chat-menu';
+    menu.style.position = 'fixed';
+    menu.style.top = event.clientY + 'px';
+    menu.style.left = event.clientX + 'px';
+    menu.style.zIndex = '10001';
+    
+    // Редактировать - все могут редактировать СВОИ сообщения
+    if (isMyMessage) {
+        const editBtn = document.createElement('div');
+        editBtn.className = 'chat-menu-item';
+        editBtn.innerHTML = '✏️ Редактировать';
+        editBtn.onclick = () => {
+            const newText = prompt('Редактировать сообщение:', oldText);
+            if (newText && newText !== oldText) {
+                editMessage(msgId, newText);
+            }
+            menu.remove();
+        };
+        menu.appendChild(editBtn);
+    }
+    
+    // Удалить - учитель может всё, ученик только свои
+    if (isTeacher || isMyMessage) {
+        const deleteBtn = document.createElement('div');
+        deleteBtn.className = 'chat-menu-item delete';
+        deleteBtn.innerHTML = '🗑️ Удалить';
+        deleteBtn.onclick = () => {
+            if (confirm('Удалить сообщение?')) {
+                deleteMessage(msgId);
+            }
+            menu.remove();
+        };
+        menu.appendChild(deleteBtn);
+    }
+    
+    if (menu.children.length > 0) {
+        document.body.appendChild(menu);
+        setTimeout(() => {
+            document.addEventListener('click', function closeMenu(e) {
+                if (!menu.contains(e.target)) {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }, 10);
+    }
+}
+
+function editMessage(msgId, newText) {
+    fetch('/api/edit_message/' + msgId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: newText })
+    }).then(() => loadMessages());
+}
+
+function deleteMessage(msgId) {
+    fetch('/api/delete_message/' + msgId, { method: 'DELETE' }).then(() => loadMessages());
+}
+
+function uploadPhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    fetch('/api/upload_chat_file', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                sendPhotoMessage(data.file_url);
+            } else {
+                alert('Ошибка загрузки фото');
+            }
+        });
+    
+    input.value = '';
+}
+
+function sendPhotoMessage(photoUrl) {
+    if (!currentUserId) return;
+    
+    fetch('/api/send_message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            receiver_id: currentUserId, 
+            message: '', 
+            file_url: photoUrl,
+            file_name: '',
+            file_type: 'image'
+        })
+    }).then(() => {
+        loadMessages();
+        updateUnread();
+    });
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInputField');
+    const text = input.value.trim();
+    if (!text || !currentUserId) return;
+    
+    fetch('/api/send_message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ receiver_id: currentUserId, message: text, file_url: '', file_name: '', file_type: '' })
+    })
+    .then(res => res.json())
+    .then(() => {
+        input.value = '';
+        loadMessages();
+        updateUnread();
+    });
+}
+
+function markAsRead() {
+    if (currentUserId) {
+        fetch('/api/mark_as_read/' + currentUserId, { method: 'POST' });
+    }
+}
+
+function updateUnread() {
+    fetch('/api/unread_count')
+        .then(res => res.json())
+        .then(data => {
+            const badge = document.getElementById('unreadTotal');
+            if (badge) {
+                if (data.count > 0) {
+                    badge.textContent = data.count > 99 ? '99+' : data.count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+            if (data.senders) {
+                data.senders.forEach(sender => {
+                    const userBadge = document.getElementById(`badge${sender.id}`);
+                    if (userBadge) {
+                        userBadge.style.display = 'flex';
+                        userBadge.textContent = '●';
+                    }
+                });
+            }
+        });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+setInterval(() => {
+    if (currentUserId) {
+        const panel = document.getElementById('chatPanel');
+        if (panel.classList.contains('open')) loadMessages();
+    }
+    updateUnread();
+}, 3000);
+
+updateUnread();
+
+{`% if current_user.role == 'student' and teacher_data %`}
+setTimeout(() => selectUser(`{{ teacher_data.id }}`), 500);
+{`% endif %`}
+</script>

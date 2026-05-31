@@ -800,3 +800,614 @@ p {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-dark);
 }
+/* Исправление для видео плеера */
+.video-container {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.video-container video {
+    width: 100%;
+    height: auto;
+    max-height: 260px;
+    min-height: 200px;
+    object-fit: contain;
+    display: block;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .video-container video {
+        max-height: 200px;
+        min-height: 180px;
+    }
+}
+
+/* Красивые карточки */
+.card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+/* Кнопки */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-danger {
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 0.9rem;
+}
+/* ===== УЛУЧШЕННЫЕ КАРТОЧКИ ВИДЕО ===== */
+.videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.video-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.video-card .card-body {
+    padding: 1.25rem;
+}
+
+.video-container {
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 0.75rem 0;
+    position: relative;
+}
+
+.video-container video {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    display: block;
+}
+
+/* Бейджи предметов */
+.subject-badge {
+    margin-bottom: 0.75rem;
+}
+
+.badge-chemistry, .badge-biology {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-chemistry {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+}
+
+.badge-biology {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+}
+
+/* Карточки заданий */
+.card-hover-lift {
+    transition: all 0.3s ease;
+}
+
+.card-hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Вкладки предметов */
+.subject-tabs {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 12px;
+}
+
+.tab-btn:hover {
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.tab-btn.active {
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.12);
+    position: relative;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    height: 2px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    border-radius: 2px;
+}
+
+/* Адаптация для планшетов */
+@media (max-width: 768px) {
+    .videos-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .subject-tabs {
+        justify-content: center;
+    }
+    
+    .tab-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+/* ========== ПОЛНАЯ АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ========== */
+
+/* Планшеты (768px - 1024px) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 24px;
+    }
+    
+    .stats-grid {
+        gap: 16px;
+    }
+    
+    .dashboard-grid {
+        gap: 16px;
+    }
+}
+
+/* Телефоны (до 768px) */
+@media (max-width: 768px) {
+    /* Общие */
+    body {
+        font-size: 14px;
+    }
+    
+    .container {
+        padding: 0 16px;
+    }
+    
+    h1 {
+        font-size: 1.6rem;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    /* Статистика */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin: 24px 0;
+    }
+    
+    .stat-card {
+        padding: 16px 12px;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
+    }
+    
+    /* Карточки видео */
+    .videos-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .video-container video {
+        max-height: 180px;
+    }
+    
+    .video-container iframe {
+        height: 180px;
+    }
+    
+    /* Карточки дашборда */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .dashboard-card {
+        padding: 20px 16px;
+    }
+    
+    /* Таблицы */
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+    
+    th, td {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+    }
+    
+    /* Формы */
+    .form-container {
+        margin: 30px auto;
+    }
+    
+    .form-card {
+        padding: 24px 20px;
+    }
+    
+    .form-title {
+        font-size: 1.3rem;
+    }
+    
+    .form-control {
+        padding: 10px 14px;
+    }
+    
+    /* Карточки покупок */
+    .pricing-grid {
+        gap: 16px;
+    }
+    
+    .pricing-card {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .pricing-price {
+        font-size: 1.8rem;
+    }
+    
+    /* Активность */
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .activity-time {
+        align-self: flex-start;
+    }
+    
+    /* Герой секция */
+    .hero {
+        padding: 40px 0;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    /* Кнопки */
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+    
+    .btn-large {
+        padding: 12px 24px;
+    }
+    
+    /* Вкладки */
+    .subject-tabs {
+        justify-content: center;
+    }
+    
+    .tab-btn {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
+    
+    /* Чат на телефоне */
+    .chat-panel {
+        width: calc(100vw - 40px);
+        right: 20px;
+        height: calc(100vh - 100px);
+        bottom: 80px;
+    }
+    
+    /* Результаты */
+    .stats-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .stat-box {
+        padding: 16px;
+    }
+    
+    .stat-box-number {
+        font-size: 1.5rem;
+    }
+    
+    .grade-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .grade-input, .comment-input {
+        width: 100%;
+    }
+}
+
+/* Маленькие телефоны (до 480px) */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 12px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-title {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card {
+        padding: 12px;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+    
+    .form-card {
+        padding: 20px 16px;
+    }
+    
+    .form-title {
+        font-size: 1.2rem;
+    }
+    
+    .results-table-wrapper {
+        border-radius: 12px;
+    }
+    
+    .results-table th,
+    .results-table td {
+        padding: 10px 8px;
+    }
+    
+    .empty-results {
+        padding: 30px 20px;
+    }
+    
+    .empty-icon {
+        font-size: 48px;
+    }
+    
+    .pricing-card {
+        padding: 16px;
+    }
+    
+    .pricing-title {
+        font-size: 1.2rem;
+    }
+    
+    .pricing-price {
+        font-size: 1.5rem;
+    }
+    
+    .pricing-features li {
+        font-size: 0.75rem;
+        padding: 6px 0;
+    }
+}
+
+/* Альбомная ориентация на телефоне */
+@media (max-width: 768px) and (orientation: landscape) {
+    .chat-panel {
+        height: 400px;
+    }
+    
+    .chat-users {
+        max-height: 80px;
+    }
+}
+
+/* Темная тема для мобильных */
+[data-theme="dark"] .nav-links {
+    background: #1e293b;
+}
+
+[data-theme="dark"] .mobile-menu-btn {
+    color: #f1f5f9;
+}
+
+/* Плавные переходы */
+.nav-links {
+    transition: right 0.3s ease;
+}
+
+/* Улучшение touch-целей на телефонах */
+@media (max-width: 768px) {
+    button, 
+    .btn, 
+    .nav-link,
+    .tab-btn,
+    .chat-user,
+    .answer-card,
+    .pricing-btn,
+    .grade-btn {
+        min-height: 44px;
+    }
+    
+    input, 
+    select, 
+    textarea {
+        font-size: 16px !important; /* Предотвращает зум на iOS */
+    }
+}
+/* ===== АДАПТАЦИЯ ТОЛЬКО ДЛЯ ТЕЛЕФОНОВ ===== */
+@media (max-width: 768px) {
+    /* Статистика */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    /* Карточки видео */
+    .videos-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Карточки дашборда */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Карточки покупок */
+    .pricing-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .pricing-card {
+        width: 100%;
+        max-width: 320px;
+    }
+    
+    /* Таблицы (горизонтальный скролл) */
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+    
+    /* Герой секция */
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    /* Кнопки */
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+    
+    /* Вкладки */
+    .subject-tabs {
+        justify-content: center;
+    }
+    
+    .tab-btn {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
+    
+    /* Результаты */
+    .stats-row {
+        flex-direction: column;
+    }
+    
+    /* Формы */
+    .form-container {
+        margin: 30px auto;
+    }
+    
+    .form-card {
+        padding: 24px 20px;
+    }
+    
+    /* Активность */
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-title {
+        font-size: 1.5rem;
+    }
+    
+    .form-card {
+        padding: 20px 16px;
+    }
+}

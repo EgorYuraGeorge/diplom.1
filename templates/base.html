@@ -2,10 +2,117 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7c3aed">
     <title>{% block title %}Образовательная платформа - Химия и Биология{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Стили только для мобильного меню - НЕ ВЛИЯЮТ НА КОМП */
+        .mobile-menu-btn {
+            display: none;
+        }
+        
+        .menu-overlay {
+            display: none;
+        }
+        
+        .menu-close {
+            display: none;
+        }
+        
+        /* Компьютерная версия - старая */
+        @media (min-width: 769px) {
+            .nav-links {
+                display: flex !important;
+                position: static !important;
+                width: auto !important;
+                height: auto !important;
+                background: none !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                flex-direction: row !important;
+            }
+            
+            .theme-toggle {
+                display: flex;
+            }
+        }
+        
+        /* Мобильная версия */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                padding: 8px;
+                color: #1a2c3e;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                align-items: stretch;
+                padding: 60px 20px 20px;
+                transition: right 0.3s ease;
+                z-index: 999;
+                gap: 8px;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .nav-links.open {
+                right: 0;
+            }
+            
+            .menu-close {
+                display: block;
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                font-size: 22px;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+            
+            .menu-overlay.active {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 998;
+            }
+            
+            .theme-toggle {
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid #e2e8f0;
+                justify-content: center;
+            }
+            
+            html, body {
+                overflow-x: hidden;
+            }
+        }
+        
+        [data-theme="dark"] .nav-links {
+            background: #1e293b;
+        }
+        
+        [data-theme="dark"] .mobile-menu-btn {
+            color: #f1f5f9;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -14,34 +121,103 @@
                 <span class="logo-icon">🔬</span>
                 Химия & Биология
             </a>
-            <div class="nav-links">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            <div class="menu-overlay" onclick="toggleMobileMenu()"></div>
+            <div class="nav-links" id="navLinks">
+                <button class="menu-close" onclick="toggleMobileMenu()">✕</button>
                 {% if current_user.is_authenticated %}
                     {% if current_user.role == 'teacher' %}
                         <a href="{{ url_for('teacher_dashboard') }}" class="nav-link">Панель учителя</a>
+                        <a href="{{ url_for('videos') }}" class="nav-link">Видеоуроки</a>
+                        <a href="{{ url_for('homeworks') }}" class="nav-link">Задания</a>
+                        <a href="{{ url_for('tests') }}" class="nav-link">Тесты</a>
                         <a href="{{ url_for('add_video') }}" class="nav-link">Добавить видео</a>
                         <a href="{{ url_for('add_homework') }}" class="nav-link">Добавить задание</a>
                         <a href="{{ url_for('results') }}" class="nav-link">Результаты</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link">Выйти ({{ current_user.username }})</a>
                     {% else %}
                         <a href="{{ url_for('videos') }}" class="nav-link">Видеоуроки</a>
                         <a href="{{ url_for('homeworks') }}" class="nav-link">Задания</a>
+                        <a href="{{ url_for('tests') }}" class="nav-link">Тесты</a>
+                        <a href="{{ url_for('purchase') }}" class="nav-link">Купить доступ</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link">Выйти ({{ current_user.username }})</a>
                     {% endif %}
-                    <a href="{{ url_for('logout') }}" class="nav-link">Выйти ({{ current_user.username }})</a>
                 {% else %}
+                    <a href="{{ url_for('index') }}" class="nav-link">На главную</a>
                     <a href="{{ url_for('videos') }}" class="nav-link">Видеоуроки</a>
                     <a href="{{ url_for('homeworks') }}" class="nav-link">Задания</a>
                     <a href="{{ url_for('login') }}" class="nav-link">Войти</a>
                     <a href="{{ url_for('register') }}" class="nav-link">Регистрация</a>
                 {% endif %}
+               
             </div>
         </nav>
     </header>
 
     <main class="main-content">
         <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
             {% block content %}{% endblock %}
         </div>
     </main>
 
+    {% if current_user.is_authenticated %}
+        {% include 'chat_widget.html' %}
+    {% endif %}
+
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const overlay = document.querySelector('.menu-overlay');
+            navLinks.classList.toggle('open');
+            overlay.classList.toggle('active');
+            
+            if (navLinks.classList.contains('open')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Закрываем меню при клике на ссылку
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks')?.classList.remove('open');
+                document.querySelector('.menu-overlay')?.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+        
+        function toggleTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateThemeButtons();
+        }
+        
+        function updateThemeButtons() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                if (btn.getAttribute('data-theme') === current) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeButtons();
+    </script>
     <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>
