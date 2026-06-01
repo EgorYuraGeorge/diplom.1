@@ -1,0 +1,469 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1 class="gradient-text">🛒 Оформление заказа</h1>
+        <p>Заполните данные для получения доступа</p>
+    </div>
+
+    <div class="checkout-grid">
+        <!-- Информация о заказе -->
+        <div class="order-summary">
+            <h3>📋 Ваш заказ</h3>
+            
+            {% if subject == 'chemistry' %}
+            <div class="order-item">
+                <div class="order-item-icon">🧪</div>
+                <div class="order-item-info">
+                    <div class="order-item-title">Курс «Химия»</div>
+                    <div class="order-item-desc">Полный доступ ко всем материалам по химии</div>
+                </div>
+                <div class="order-item-price">990 ₽</div>
+            </div>
+            {% elif subject == 'biology' %}
+            <div class="order-item">
+                <div class="order-item-icon">🔬</div>
+                <div class="order-item-info">
+                    <div class="order-item-title">Курс «Биология»</div>
+                    <div class="order-item-desc">Полный доступ ко всем материалам по биологии</div>
+                </div>
+                <div class="order-item-price">990 ₽</div>
+            </div>
+            {% elif subject == 'both' %}
+            <div class="order-item">
+                <div class="order-item-icon">🧪</div>
+                <div class="order-item-info">
+                    <div class="order-item-title">Курс «Химия»</div>
+                    <div class="order-item-desc">Полный доступ</div>
+                </div>
+                <div class="order-item-price">990 ₽</div>
+            </div>
+            <div class="order-item">
+                <div class="order-item-icon">🔬</div>
+                <div class="order-item-info">
+                    <div class="order-item-title">Курс «Биология»</div>
+                    <div class="order-item-desc">Полный доступ</div>
+                </div>
+                <div class="order-item-price">990 ₽</div>
+            </div>
+            <div class="order-total">
+                <span>Итого:</span>
+                <span class="total-price">1 790 ₽</span>
+            </div>
+            <div class="order-savings">
+                💰 Экономия: 190 ₽
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Форма оплаты -->
+        <div class="payment-form">
+            <h3>💳 Способ оплаты</h3>
+            
+            <div class="payment-methods">
+                <label class="payment-method">
+                    <input type="radio" name="payment_method" value="card" checked>
+                    <div class="payment-method-content">
+                        <span>💳 Банковская карта</span>
+                        <div class="card-icons">
+                            <span>Visa</span>
+                            <span>Mastercard</span>
+                            <span>Мир</span>
+                        </div>
+                    </div>
+                </label>
+                
+                <label class="payment-method">
+                    <input type="radio" name="payment_method" value="sbp">
+                    <div class="payment-method-content">
+                        <span>📱 СБП</span>
+                        <small>Система быстрых платежей</small>
+                    </div>
+                </label>
+                
+                <label class="payment-method">
+                    <input type="radio" name="payment_method" value="demo">
+                    <div class="payment-method-content">
+                        <span>🎓 Демо-оплата</span>
+                        <small>Тестовый режим (без списания)</small>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Карточка для ввода данных карты -->
+            <div class="card-details" id="cardDetails">
+                <div class="form-group">
+                    <label class="form-label">Номер карты</label>
+                    <input type="text" class="form-control" placeholder="1234 5678 9012 3456" id="cardNumber">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">MM/YY</label>
+                        <input type="text" class="form-control" placeholder="12/28" id="cardExpiry">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CVV</label>
+                        <input type="text" class="form-control" placeholder="123" id="cardCvv">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Демо-режим (скрыт по умолчанию) -->
+            <div class="demo-mode" id="demoMode" style="display: none;">
+                <div class="demo-alert">
+                    🔐 <strong>Тестовый режим</strong><br>
+                    Никакие средства не будут списаны. Доступ откроется сразу после нажатия кнопки.
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-pay" onclick="processPayment()">
+                💳 Оплатить заказ
+            </button>
+
+            <div class="secure-badge">
+                🔒 Безопасная оплата. Данные защищены.
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.checkout-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.checkout-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.checkout-header h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* Сводка заказа */
+.order-summary {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+.order-summary h3 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.order-item-icon {
+    font-size: 28px;
+    width: 50px;
+}
+
+.order-item-info {
+    flex: 1;
+}
+
+.order-item-title {
+    font-weight: 600;
+}
+
+.order-item-desc {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.order-item-price {
+    font-weight: 700;
+    color: #7c3aed;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-top: 2px solid #e5e7eb;
+    margin-top: 10px;
+}
+
+.total-price {
+    color: #7c3aed;
+    font-size: 1.3rem;
+}
+
+.order-savings {
+    background: #ecfdf5;
+    color: #059669;
+    padding: 8px 12px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+/* Форма оплаты */
+.payment-form {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+.payment-methods {
+    margin: 20px 0;
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.payment-method:hover {
+    border-color: #7c3aed;
+    background: #faf5ff;
+}
+
+.payment-method input {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    accent-color: #7c3aed;
+}
+
+.payment-method-content {
+    flex: 1;
+}
+
+.payment-method-content small {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.card-icons {
+    font-size: 0.7rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.card-details {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.demo-alert {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.btn-pay {
+    width: 100%;
+    padding: 16px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+}
+
+.secure-badge {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+/* Анимация загрузки */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.6s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .checkout-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function toggleCardDetails() {
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const cardDetails = document.getElementById('cardDetails');
+    const demoMode = document.getElementById('demoMode');
+    
+    if (paymentMethod === 'demo') {
+        cardDetails.style.display = 'none';
+        demoMode.style.display = 'block';
+    } else {
+        cardDetails.style.display = 'block';
+        demoMode.style.display = 'none';
+    }
+}
+
+document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', toggleCardDetails);
+});
+toggleCardDetails();
+
+function processPayment() {
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const btn = document.querySelector('.btn-pay');
+    const originalText = btn.innerHTML;
+    
+    // Показываем загрузку
+    btn.innerHTML = '<span class="loading-spinner"></span> Обработка платежа...';
+    btn.disabled = true;
+    
+    // Имитируем обработку платежа (реалистичная задержка)
+    setTimeout(() => {
+        if (paymentMethod === 'demo') {
+            showResult('success', '🎉 Оплата прошла успешно! Доступ открыт.');
+            completePurchase();
+        } else if (paymentMethod === 'card') {
+            // Имитация проверки карты
+            const cardNumber = document.getElementById('cardNumber')?.value.replace(/\s/g, '');
+            const expiry = document.getElementById('cardExpiry')?.value;
+            const cvv = document.getElementById('cardCvv')?.value;
+            
+            if (!cardNumber || cardNumber.length < 13) {
+                showResult('error', '❌ Неверный номер карты');
+                resetButton(btn, originalText);
+                return;
+            }
+            if (!expiry || expiry.length < 5) {
+                showResult('error', '❌ Неверный срок действия карты');
+                resetButton(btn, originalText);
+                return;
+            }
+            if (!cvv || cvv.length < 3) {
+                showResult('error', '❌ Неверный CVV код');
+                resetButton(btn, originalText);
+                return;
+            }
+            
+            showResult('success', '✅ Оплата прошла успешно! Доступ открыт.');
+            completePurchase();
+        } else if (paymentMethod === 'sbp') {
+            showResult('success', '📱 Оплата через СБП выполнена! Доступ открыт.');
+            completePurchase();
+        }
+        
+        resetButton(btn, originalText);
+    }, 2000);
+}
+
+function showResult(type, message) {
+    // Удаляем старые сообщения
+    const oldMessage = document.querySelector('.payment-result');
+    if (oldMessage) oldMessage.remove();
+    
+    const resultDiv = document.createElement('div');
+    resultDiv.className = `payment-result ${type}`;
+    resultDiv.style.cssText = `
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+        background: ${type === 'success' ? '#d1fae5' : '#fee2e2'};
+        color: ${type === 'success' ? '#065f46' : '#991b1b'};
+        animation: fadeInUp 0.3s ease;
+    `;
+    resultDiv.innerHTML = message;
+    document.querySelector('.payment-form').appendChild(resultDiv);
+    
+    setTimeout(() => {
+        resultDiv.remove();
+    }, 3000);
+}
+
+function completePurchase() {
+    // Отправляем запрос на сервер для подтверждения покупки
+    const subject = '{{ subject }}';
+    
+    fetch('/purchase_subject', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `subject=${subject}`
+    })
+    .then(() => {
+        setTimeout(() => {
+            window.location.href = '/videos';
+        }, 1500);
+    });
+}
+
+function resetButton(btn, originalText) {
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 1000);
+}
+
+// Форматирование номера карты
+document.getElementById('cardNumber')?.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 16) value = value.slice(0, 16);
+    value = value.replace(/(\d{4})/g, '$1 ').trim();
+    e.target.value = value;
+});
+
+// Форматирование срока действия
+document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 4) value = value.slice(0, 4);
+    if (value.length >= 3) {
+        value = value.slice(0, 2) + '/' + value.slice(2);
+    }
+    e.target.value = value;
+});
+
+// Только цифры для CVV
+document.getElementById('cardCvv')?.addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+});
+</script>
+{% endblock %}

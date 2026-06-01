@@ -1,0 +1,33 @@
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Загруженные файлы
+static/uploads/
+uploads/
+
+# Временные файлы Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Виртуальное окружение
+venv/
+.venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Логи
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

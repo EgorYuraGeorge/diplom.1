@@ -175,6 +175,11 @@ def allowed_chat_file(filename):
     allowed = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf', 'doc', 'docx', 'txt', 'zip', 'rar'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed
 
+# ========== МАРШРУТ ДЛЯ СТАТИКИ ==========
+@app.route('/static/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 # ========== СОЗДАНИЕ ТАБЛИЦ ==========
 with app.app_context():
     db.create_all()
@@ -218,7 +223,7 @@ def register():
         email = request.form['email']
         password = request.form['password']
         confirm = request.form['confirm_password']
-        role = request.form.get('role', 'student')
+        role = 'student'
         
         if password != confirm:
             flash('Пароли не совпадают!', 'error')
@@ -443,15 +448,29 @@ def results():
 @app.route('/teacher/grade_result/<int:result_id>', methods=['POST'])
 @login_required
 def grade_result(result_id):
+    if current_user.role != 'teacher':
+        flash('Доступ запрещен', 'error')
+        return redirect(url_for('index'))
+    
     result = HomeworkResult.query.get_or_404(result_id)
+    
+    if result.homework.teacher_id != current_user.id:
+        flash('Вы можете оценивать только свои задания!', 'error')
+        return redirect(url_for('results'))
+    
     grade = request.form.get('grade')
     comment = request.form.get('comment', '')
     
     if grade:
-        result.grade = int(grade)
-        result.teacher_comment = comment
-        db.session.commit()
-        flash('Оценка сохранена!', 'success')
+        try:
+            result.grade = int(grade)
+            result.teacher_comment = comment
+            db.session.commit()
+            flash('Оценка сохранена!', 'success')
+        except ValueError:
+            flash('Ошибка: оценка должна быть числом', 'error')
+    else:
+        flash('Ошибка: введите оценку', 'error')
     
     return redirect(url_for('results'))
 
@@ -506,8 +525,16 @@ def add_video():
                 path = os.path.join('videos', unique)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], path))
                 
-                video = Video(title=title, video_url=path, video_type='uploaded', subject=subject, 
-                            description=description, teacher_id=current_user.id, video_filename=filename, video_file_path=path)
+                video = Video(
+                    title=title, 
+                    video_url=path, 
+                    video_type='uploaded', 
+                    subject=subject, 
+                    description=description, 
+                    teacher_id=current_user.id, 
+                    video_filename=filename, 
+                    video_file_path=path
+                )
                 db.session.add(video)
                 db.session.commit()
                 flash('Видео добавлено!', 'success')
@@ -523,8 +550,14 @@ def add_video():
             else:
                 embed = url
             
-            video = Video(title=title, video_url=embed, video_type='youtube', subject=subject, 
-                        description=description, teacher_id=current_user.id)
+            video = Video(
+                title=title, 
+                video_url=embed, 
+                video_type='youtube', 
+                subject=subject, 
+                description=description, 
+                teacher_id=current_user.id
+            )
             db.session.add(video)
             db.session.commit()
             flash('Видео добавлено!', 'success')
@@ -535,8 +568,18 @@ def add_video():
 @app.route('/teacher/delete_video/<int:video_id>', methods=['POST'])
 @login_required
 def delete_video(video_id):
+    if current_user.role != 'teacher':
+        return redirect(url_for('index'))
+    
     video = Video.query.get_or_404(video_id)
     if video.teacher_id == current_user.id:
+        if video.video_file_path:
+            try:
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], video.video_file_path)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except:
+                pass
         db.session.delete(video)
         db.session.commit()
         flash('Видео удалено!', 'success')
@@ -558,6 +601,20 @@ def purchase():
                          purchases=purchases,
                          students_list=students_list,
                          teacher_data=teacher_data)
+
+# НОВЫЙ МАРШРУТ ДЛЯ ОФОРМЛЕНИЯ ЗАКАЗА
+@app.route('/checkout/<subject>')
+@login_required
+def checkout(subject):
+    if current_user.role != 'student':
+        flash('Доступ только для учеников', 'error')
+        return redirect(url_for('index'))
+    
+    if subject not in ['chemistry', 'biology', 'both']:
+        flash('Неверный выбор предмета', 'error')
+        return redirect(url_for('purchase'))
+    
+    return render_template('checkout.html', subject=subject, students_list=[], teacher_data=None)
 
 @app.route('/purchase_subject', methods=['POST'])
 @login_required
@@ -859,6 +916,11 @@ def take_test(test_id):
         return redirect(url_for('index'))
     
     test = Test.query.get_or_404(test_id)
+    
+    if not current_user.has_access_to(test.subject):
+        flash('У вас нет доступа к этому тесту!', 'error')
+        return redirect(url_for('tests'))
+    
     existing_result = TestResult.query.filter_by(test_id=test_id, student_id=current_user.id, completed_at=None).first()
     
     students_list = []
@@ -878,14 +940,12 @@ def take_test(test_id):
             if question.question_type == 'multiple':
                 user_answers = request.form.getlist(f'q{question.id}')
                 correct_answers = [a.id for a in question.answers if a.is_correct]
-                
                 user_set = set()
                 for a in user_answers:
                     try:
                         user_set.add(int(a))
                     except ValueError:
                         pass
-                
                 correct_set = set(correct_answers)
                 
                 if len(correct_set) > 0:
@@ -894,7 +954,6 @@ def take_test(test_id):
                     elif user_set:
                         correct_count = len(user_set.intersection(correct_set))
                         score += question.points * correct_count // len(correct_set)
-                
                 answers_data[str(question.id)] = ','.join(user_answers)
             else:
                 user_answer = request.form.get(f'q{question.id}')
@@ -907,9 +966,7 @@ def take_test(test_id):
                         pass
                     answers_data[str(question.id)] = user_answer
         
-        percentage = 0
-        if existing_result.max_score > 0:
-            percentage = int((score / existing_result.max_score) * 100)
+        percentage = int((score / existing_result.max_score) * 100) if existing_result.max_score > 0 else 0
         
         if percentage >= 85:
             grade = '5'
@@ -943,6 +1000,11 @@ def test_results(test_id):
         return redirect(url_for('index'))
     
     test = Test.query.get_or_404(test_id)
+    
+    if test.teacher_id != current_user.id:
+        flash('Вы можете просматривать только свои тесты', 'error')
+        return redirect(url_for('tests'))
+    
     results = TestResult.query.filter_by(test_id=test_id).all()
     completed_results = [r for r in results if r.completed_at]
     avg_score = sum(r.percentage for r in completed_results) // len(completed_results) if completed_results else 0
@@ -964,6 +1026,11 @@ def delete_test(test_id):
         return redirect(url_for('index'))
     
     test = Test.query.get_or_404(test_id)
+    
+    if test.teacher_id != current_user.id:
+        flash('Вы можете удалять только свои тесты!', 'error')
+        return redirect(url_for('tests'))
+    
     TestResult.query.filter_by(test_id=test_id).delete()
     db.session.delete(test)
     db.session.commit()

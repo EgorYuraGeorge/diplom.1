@@ -5,11 +5,8 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="gradient-text" style="font-size: 2rem; margin: 0;">🎓 Видеоуроки</h1>
         
-        <!-- Кнопка покупки для учеников -->
         {% if current_user.role == 'student' %}
-        <a href="{{ url_for('purchase') }}" class="btn btn-secondary">
-            🛒 Купить доступ
-        </a>
+        <a href="{{ url_for('purchase') }}" class="btn btn-secondary">🛒 Купить доступ</a>
         {% endif %}
         
         {% if current_user.role == 'teacher' %}
@@ -35,7 +32,6 @@
     </div>
     {% endif %}
     
-    <!-- Вкладки -->
     <div class="subject-tabs">
         <button class="tab-btn active" data-subject="all">📚 Все</button>
         {% if current_user.role == 'teacher' or current_user.has_access_to('chemistry') %}
@@ -46,7 +42,6 @@
         {% endif %}
     </div>
     
-    <!-- Сетка видео -->
     <div class="videos-grid">
         {% for video in videos %}
             {% if current_user.role == 'teacher' or current_user.has_access_to(video.subject) %}
@@ -64,18 +59,12 @@
                     
                     <div class="video-container">
                         {% if video.video_type == 'uploaded' and video.video_file_path %}
-                            <!-- ЗАГРУЖЕННОЕ ВИДЕО - ЗАПРЕТ СКАЧИВАНИЯ -->
-                            <video controls controlsList="nodownload" oncontextmenu="return false;" disablepictureinpicture>
+                            <video controls controlsList="nodownload" oncontextmenu="return false;" style="width:100%; max-height:200px;">
                                 <source src="/static/uploads/{{ video.video_file_path }}" type="video/mp4">
                                 Ваш браузер не поддерживает видео
                             </video>
                         {% elif video.video_type == 'youtube' %}
-                            <!-- YOUTUBE ВИДЕО -->
-                            <iframe src="{{ video.video_url }}" 
-                                    frameborder="0" 
-                                    allowfullscreen
-                                    style="width: 100%; height: 180px;">
-                            </iframe>
+                            <iframe src="{{ video.video_url }}" frameborder="0" allowfullscreen style="width: 100%; height: 180px;"></iframe>
                         {% else %}
                             <div style="padding: 40px; text-align: center;">⚠️ Видео недоступно</div>
                         {% endif %}
@@ -102,33 +91,6 @@
 </div>
 
 <style>
-.access-info .badge-chemistry, .access-info .badge-biology {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    text-decoration: none;
-}
-
-.access-info .badge-chemistry {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: white;
-}
-
-.access-info .badge-biology {
-    background: linear-gradient(135deg, #059669, #10b981);
-    color: white;
-}
-
-.access-info .locked {
-    background: #64748b;
-    opacity: 0.7;
-}
-
-.access-info .locked:hover {
-    opacity: 1;
-}
-
 .videos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -155,7 +117,6 @@
     border-radius: 12px;
     overflow: hidden;
     margin: 0.75rem 0;
-    position: relative;
 }
 
 .video-container video {
@@ -163,25 +124,6 @@
     height: auto;
     max-height: 200px;
     object-fit: contain;
-    display: block;
-}
-
-/* Запрет выделения текста на видео */
-.video-container video::-webkit-media-controls {
-    user-select: none;
-}
-
-/* Скрываем кнопку скачивания в Chrome/Edge */
-.video-container video::-internal-media-controls-download-button {
-    display: none;
-}
-
-.video-container video::-webkit-media-controls-enclosure {
-    overflow: hidden;
-}
-
-.video-container video::-webkit-media-controls-panel {
-    width: calc(100% + 30px);
 }
 
 .subject-tabs {
@@ -215,6 +157,24 @@
     background: rgba(37, 99, 235, 0.12);
 }
 
+.badge-chemistry, .badge-biology {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-chemistry {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.badge-biology {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
 .btn-danger {
     background: #dc2626;
     color: white;
@@ -233,6 +193,29 @@
     .videos-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.access-info .badge-chemistry, .access-info .badge-biology {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.access-info .badge-chemistry {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+}
+
+.access-info .badge-biology {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+}
+
+.access-info .locked {
+    background: #64748b;
+    opacity: 0.7;
 }
 </style>
 
@@ -253,24 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     card.style.display = 'none';
                 }
             });
-        });
-    });
-    
-    // Дополнительная защита от скачивания видео
-    const videos = document.querySelectorAll('video');
-    videos.forEach(video => {
-        // Запрет контекстного меню (правой кнопки мыши)
-        video.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
-        
-        // Запрет сохранения через Ctrl+S
-        video.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-                e.preventDefault();
-                return false;
-            }
         });
     });
 });

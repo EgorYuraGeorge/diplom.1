@@ -30,13 +30,9 @@
                        placeholder="Повторите пароль">
             </div>
             
-            <div class="form-group">
-                <label for="role">Роль:</label>
-                <select id="role" name="role" class="form-control">
-                    <option value="student">👩‍🎓 Ученик</option>
-                    <option value="teacher">👨‍🏫 Учитель</option>
-                </select>
-            </div>
+            <!-- Роль больше не выбирается пользователем. Все регистрируются как ученики.
+                 Учитель создаётся только через init_db.py -->
+            <input type="hidden" name="role" value="student">
             
             <button type="submit" class="btn btn-primary" style="width: 100%;">
                 Зарегистрироваться
@@ -47,6 +43,13 @@
             Уже есть аккаунт? <a href="{{ url_for('login') }}" style="color: var(--primary); text-decoration: none;">
             Войдите в систему</a>
         </p>
+        
+        <div class="info-note" style="margin-top: 20px; padding: 12px; background: #f0fdf4; border-radius: 12px; text-align: center;">
+            <p style="margin: 0; font-size: 0.8rem; color: #166534;">
+                🔒 Все пользователи регистрируются как ученики.<br>
+                Учитель уже создан: <strong>teacher / teacher123</strong>
+            </p>
+        </div>
     </div>
 </div>
 
@@ -57,6 +60,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.info-note {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+[data-theme="dark"] .info-note {
+    background: #1a2e1a;
+    border-color: #2e4a2e;
+    color: #86efac;
+}
+
+[data-theme="dark"] .info-note p {
+    color: #86efac;
 }
 </style>
 {% endblock %}

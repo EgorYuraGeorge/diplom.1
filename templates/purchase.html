@@ -1,292 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<style>
-/* ===== СТИЛИ ДЛЯ СТРАНИЦЫ ПОКУПОК ===== */
-.pricing-page {
-    padding: 48px 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.pricing-header {
-    text-align: center;
-    margin-bottom: 48px;
-}
-
-.pricing-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.pricing-header p {
-    color: #6b7280;
-    font-size: 1.1rem;
-}
-
-/* Сетка тарифов */
-.pricing-grid {
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-    gap: 30px;
-    flex-wrap: wrap;
-    margin: 0 auto;
-}
-
-/* Карточка тарифа */
-.pricing-card {
-    width: 320px;
-    background: white;
-    border-radius: 24px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    border: 1px solid #e5e7eb;
-    position: relative;
-    background: white;
-}
-
-.pricing-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
-}
-
-/* Популярный тариф */
-.pricing-card.popular {
-    border: 2px solid #6366f1;
-    box-shadow: 0 10px 25px -12px rgba(99, 102, 241, 0.3);
-}
-
-/* Бейдж - ИСПРАВЛЕН */
-.popular-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 30px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    z-index: 10;
-}
-
-/* Шапка карточки */
-.pricing-card-header {
-    padding: 28px 24px 20px;
-    text-align: center;
-}
-
-.pricing-icon {
-    width: 65px;
-    height: 65px;
-    background: #f3f4f6;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    margin: 0 auto 16px;
-}
-
-.pricing-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.pricing-subtitle {
-    color: #6b7280;
-    font-size: 0.8rem;
-}
-
-/* Цена */
-.pricing-price {
-    margin: 20px 0;
-}
-
-.price-amount {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #111827;
-}
-
-.price-period {
-    font-size: 0.85rem;
-    color: #6b7280;
-}
-
-/* Особенности */
-.pricing-features {
-    list-style: none;
-    padding: 0 20px;
-    margin-bottom: 28px;
-}
-
-.pricing-features li {
-    padding: 8px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #4b5563;
-    font-size: 0.85rem;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-.pricing-features li:last-child {
-    border-bottom: none;
-}
-
-.pricing-features li::before {
-    content: "✓";
-    color: #10b981;
-    font-weight: 700;
-    font-size: 0.9rem;
-}
-
-/* Кнопка */
-.pricing-btn {
-    display: block;
-    text-align: center;
-    padding: 12px 20px;
-    margin: 0 20px 28px;
-    background: #f3f4f6;
-    color: #374151;
-    text-decoration: none;
-    border-radius: 40px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    border: none;
-    width: auto;
-}
-
-.pricing-btn:hover {
-    background: #e5e7eb;
-}
-
-.pricing-btn.primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-}
-
-.pricing-btn.primary:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-}
-
-/* Мои покупки */
-.my-purchases {
-    max-width: 700px;
-    margin: 60px auto 0;
-    padding-top: 40px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.my-purchases h3 {
-    text-align: center;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 24px;
-}
-
-.purchases-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.purchase-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    background: #f9fafb;
-    border-radius: 16px;
-    transition: all 0.2s;
-}
-
-.purchase-item:hover {
-    background: #f3f4f6;
-}
-
-.purchase-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.purchase-icon {
-    font-size: 32px;
-}
-
-.purchase-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.purchase-name {
-    font-weight: 600;
-    font-size: 1rem;
-}
-
-.purchase-date {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.purchase-status {
-    background: #d1fae5;
-    color: #065f46;
-    padding: 5px 12px;
-    border-radius: 30px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-/* Адаптация */
-@media (max-width: 768px) {
-    .pricing-page {
-        padding: 32px 16px;
-    }
-    
-    .pricing-header h1 {
-        font-size: 1.8rem;
-    }
-    
-    .pricing-grid {
-        gap: 20px;
-    }
-    
-    .pricing-card {
-        width: 100%;
-        max-width: 320px;
-    }
-    
-    .popular-badge {
-        top: 8px;
-        right: 8px;
-        font-size: 0.65rem;
-        padding: 3px 10px;
-    }
-    
-    .purchase-item {
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-    }
-    
-    .purchase-info {
-        flex-direction: column;
-    }
-}
-</style>
-
 <div class="pricing-page">
     <div class="pricing-header">
         <h1>Выберите свой тариф</h1>
@@ -311,9 +25,8 @@
                 <li>Чат с преподавателем</li>
                 <li>Доступ 24/7 без ограничений</li>
             </ul>
-            <form method="POST" action="{{ url_for('purchase_subject') }}">
-                <input type="hidden" name="subject" value="chemistry">
-                <button type="submit" class="pricing-btn">Выбрать тариф →</button>
+            <form method="GET" action="{{ url_for('checkout', subject='chemistry') }}">
+                <button type="submit" class="pricing-btn">Купить сейчас →</button>
             </form>
         </div>
 
@@ -334,15 +47,14 @@
                 <li>Чат с преподавателем</li>
                 <li>Доступ 24/7 без ограничений</li>
             </ul>
-            <form method="POST" action="{{ url_for('purchase_subject') }}">
-                <input type="hidden" name="subject" value="biology">
-                <button type="submit" class="pricing-btn">Выбрать тариф →</button>
+            <form method="GET" action="{{ url_for('checkout', subject='biology') }}">
+                <button type="submit" class="pricing-btn">Купить сейчас →</button>
             </form>
         </div>
 
-        <!-- Полный пакет (популярный) -->
+        <!-- Полный пакет -->
         <div class="pricing-card popular">
-            <div class="popular-badge">⭐ Популярный</div>
+            <div class="popular-badge">⭐ Самый популярный</div>
             <div class="pricing-card-header">
                 <div class="pricing-icon">🌟</div>
                 <div class="pricing-title">Полный пакет</div>
@@ -359,14 +71,12 @@
                 <li>Бонусные материалы</li>
                 <li>Экономия 190 ₽</li>
             </ul>
-            <form method="POST" action="{{ url_for('purchase_subject') }}">
-                <input type="hidden" name="subject" value="both">
-                <button type="submit" class="pricing-btn primary">Выбрать тариф →</button>
+            <form method="GET" action="{{ url_for('checkout', subject='both') }}">
+                <button type="submit" class="pricing-btn primary">Купить сейчас →</button>
             </form>
         </div>
     </div>
 
-    <!-- Мои покупки -->
     {% if purchases %}
     <div class="my-purchases">
         <h3>📚 Мои покупки</h3>
@@ -395,4 +105,176 @@
     </div>
     {% endif %}
 </div>
+
+<style>
+.pricing-page {
+    padding: 48px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.pricing-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pricing-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.pricing-card {
+    width: 320px;
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s;
+    border: 1px solid #e5e7eb;
+    position: relative;
+}
+
+.pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+}
+
+.pricing-card.popular {
+    border: 2px solid #6366f1;
+}
+
+.popular-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+}
+
+.pricing-card-header {
+    padding: 28px 24px 20px;
+    text-align: center;
+}
+
+.pricing-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.pricing-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.pricing-price {
+    margin: 20px 0;
+}
+
+.price-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #6366f1;
+}
+
+.pricing-features {
+    list-style: none;
+    padding: 0 20px;
+    margin-bottom: 28px;
+}
+
+.pricing-features li {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #4b5563;
+    font-size: 0.85rem;
+}
+
+.pricing-features li::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: 700;
+}
+
+.pricing-btn {
+    display: block;
+    text-align: center;
+    padding: 12px 20px;
+    margin: 0 20px 28px;
+    background: #f3f4f6;
+    color: #374151;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    width: auto;
+}
+
+.pricing-btn:hover {
+    background: #e5e7eb;
+}
+
+.pricing-btn.primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+}
+
+.pricing-btn.primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.my-purchases {
+    max-width: 700px;
+    margin: 60px auto 0;
+    padding-top: 40px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.purchases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.purchase-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-radius: 16px;
+}
+
+.purchase-status {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .pricing-card {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+</style>
 {% endblock %}
