@@ -6,7 +6,7 @@ def init_db():
     
     with app.app_context():
         # Путь к базе данных
-        db_path = 'instance/site.db'
+        db_path = 'instance/school.db'
         
         # Если база уже существует, удаляем её
         if os.path.exists(db_path):

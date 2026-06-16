@@ -1,0 +1,32 @@
+---
+- name: Deploy Online School
+  hosts: web
+  become: true
+
+  tasks:
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Create project directory
+      file:
+        path: /opt/online-school
+        state: directory
+
+    - name: Copy project files
+      copy:
+        src: ../
+        dest: /opt/online-school
+
+    - name: Start containers
+      command:
+        chdir: /opt/online-school
+        cmd: docker-compose up -d --build

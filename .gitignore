@@ -1,32 +1,40 @@
-# База данных
+# Databases
 *.db
 *.sqlite
 *.sqlite3
 instance/
 
-# Загруженные файлы
-static/uploads/
+# Uploads
 uploads/
+static/uploads/
 
-# Временные файлы Python
+# Python
 __pycache__/
-*.pyc
-*.pyo
-.pytest_cache/
+*.py[cod]
+*$py.class
 
-# Виртуальное окружение
+# Virtual environments
 venv/
 .venv/
 env/
+
+# Environment variables
 .env
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
 
 # IDE
 .vscode/
 .idea/
-*.swp
 
-# Логи
+# Logs
 *.log
+
+# Docker
+docker-data/
 
 # OS
 .DS_Store

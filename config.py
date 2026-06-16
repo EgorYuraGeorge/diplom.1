@@ -5,12 +5,12 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
     
     # База данных
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///school.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Папка для загрузок
-    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
-    
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
+
     # Ограничения
     MAX_CONTENT_LENGTH = 500 * 1024 * 1024  # 500MB
     
