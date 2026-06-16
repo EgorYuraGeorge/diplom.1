@@ -32,8 +32,3 @@ jobs:
         run: |
           python -m py_compile app.py
           python -m py_compile config.py
-          python -m py_compile init_db.py
-
-      - name: Create database
-        run: |
-          python init_db.py
