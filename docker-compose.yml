@@ -1,14 +1,12 @@
-version: "3.9"
-
 services:
-web:
-build: .
-container_name: online-school
-restart: unless-stopped
-ports:
-- "5000:5000"
-volumes:
-- ./uploads:/app/uploads
-- ./instance:/app/instance
-environment:
-SECRET_KEY: production-secret-key
+  web:
+    build: .
+    container_name: online-school
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./instance:/app/instance
+    environment:
+      SECRET_KEY: production-secret-key
