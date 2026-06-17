@@ -11,6 +11,21 @@ import config
 app = Flask(__name__)
 app.config.from_object(config.Config)
 
+# Явная настройка статики
+app.static_folder = 'static'
+app.static_url_path = '/static'
+
+# Отключаем кэширование
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
 # Настройки сессии
 app.config['SECRET_KEY'] = 'your-secret-key-12345'
 app.config['SESSION_PROTECTION'] = 'strong'
