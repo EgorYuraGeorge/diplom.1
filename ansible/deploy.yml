@@ -1,31 +1,40 @@
 ---
+# сценарий автоматического развёртывания приложения
 - name: Deploy Online School
+
+  # группа серверов из inventory-файла
   hosts: web
+
+  # выполнение задач с правами администратора
   become: true
 
   tasks:
-
+    # установка Docker на сервер
     - name: Install Docker
       apt:
         name: docker.io
         state: present
         update_cache: yes
 
+    # установка Docker Compose
     - name: Install Docker Compose
       apt:
         name: docker-compose
         state: present
 
+    # создание каталога для размещения проекта
     - name: Create project directory
       file:
         path: /opt/online-school
         state: directory
 
+    # копирование файлов приложения на сервер
     - name: Copy project files
       copy:
         src: ../
         dest: /opt/online-school
 
+    # сборка контейнера и запуск приложения
     - name: Start containers
       command:
         chdir: /opt/online-school

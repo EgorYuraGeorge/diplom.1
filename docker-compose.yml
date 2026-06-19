@@ -1,12 +1,27 @@
+# используется версия синтаксиса Docker Compose
 services:
+
+  # основной сервис веб-приложения
   web:
+
+    # сборка образа из Dockerfile текущего каталога
     build: .
+
+    # имя контейнера
     container_name: online-school
+
+    # автоматический перезапуск после сбоев
     restart: unless-stopped
+
+    # проброс порта контейнера на сервер
     ports:
       - "5000:5000"
+
+    # подключение постоянных томов
     volumes:
       - ./uploads:/app/uploads
       - ./instance:/app/instance
+
+    # передача переменных окружения приложению
     environment:
       SECRET_KEY: production-secret-key

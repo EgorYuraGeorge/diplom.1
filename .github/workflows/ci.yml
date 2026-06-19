@@ -1,5 +1,7 @@
+# название процесса автоматической проверки
 name: CI
 
+# условия запуска пайплайна
 on:
   push:
     branches:
@@ -11,23 +13,32 @@ on:
       - master
 
 jobs:
+
+  # задача проверки проекта
   test:
+
+    # используется виртуальная машина Ubuntu
     runs-on: ubuntu-latest
 
     steps:
+
+      # получение исходного кода из репозитория
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # установка Python необходимой версии
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # установка зависимостей проекта
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # проверка синтаксиса основных файлов проекта
       - name: Syntax check
         run: |
           python -m py_compile app.py
